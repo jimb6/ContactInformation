@@ -1,68 +1,106 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
+
+    <ion-header>
       <ion-toolbar>
-        <ion-title>Blank</ion-title>
+        <ion-title>My Contacts</ion-title>
       </ion-toolbar>
     </ion-header>
-    
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Blank</ion-title>
-        </ion-toolbar>
-      </ion-header>
-    
-      <div id="container">
-        <strong>Ready to create an app?</strong>
-        <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-      </div>
+
+    <ion-content>
+      <ion-segment value="all" @ionChange="filterContacts($event)">
+        <ion-segment-button value="all">
+          All
+        </ion-segment-button>
+        <ion-segment-button value="family">
+          Family
+        </ion-segment-button>
+        <ion-segment-button value="friends">
+          Friends
+        </ion-segment-button>
+      </ion-segment>
+
+      <ion-list>
+        <ion-item v-for="contact in filteredContacts" :key="contact.id" @click="router.push('/detail-page')">
+          {{ contact.firstName + ' ' + contact.lastName}}
+          <ion-note slot="end">{{ contact.phone }}</ion-note>
+        </ion-item>
+      </ion-list>
+
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-import { defineComponent } from 'vue';
+
+import {defineComponent, reactive, ref} from 'vue';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonSegment,
+  IonSegmentButton,
+  IonList,
+  IonItem,
+    IonNote
+} from '@ionic/vue';
+
+import {useRouter} from "vue-router";
 
 export default defineComponent({
   name: 'HomePage',
   components: {
-    IonContent,
-    IonHeader,
     IonPage,
+    IonHeader,
+    IonToolbar,
     IonTitle,
-    IonToolbar
+    IonContent,
+    IonSegment,
+    IonSegmentButton,
+    IonList,
+    IonItem,
+    IonNote
+  },
+  setup() {
+    const router = useRouter();
+    const contacts = [
+      { id: 1, firstName: 'Daniel', lastName: 'Baldoz', email: 'daniel.baldoz@candortci.edu.ph', phone: '+63 9087898678', category: 'family' },
+      { id: 2, firstName: 'Apple Joyce', lastName: 'Comar', email: 'apple.comar@candortci.edu.ph', phone: '+63 9087898678', category: 'family' },
+      { id: 3, firstName: 'Haivy Grace', lastName: 'Balili', email: 'haivy.balili@candortci.edu.ph', phone: '+63 9087898678', category: 'family' },
+      { id: 4, firstName: 'Edeson John', lastName: 'Cabanes', email: 'edeson.cabanes@candortci.edu.ph', phone: '+63 9087898678', category: 'friends' },
+      { id: 5, firstName: 'Feblyn', lastName: 'Dahab', email: 'feblyn.dahab@candortci.edu.ph', phone: '+63 9087898678', category: 'friends' },
+      { id: 6, firstName: 'Francis', lastName: 'Alicando', email: 'francis.alicando@candortci.edu.ph', phone: '+63 9087898678', category: 'friends' }
+    ];
+
+    var filteredContacts = ref(contacts);
+
+    var filterContacts = function (event: any) {
+      var category = event.detail.value;
+
+      switch (category) {
+        case 'family':
+          filteredContacts.value = contacts.filter(contact => contact.category === 'family');
+          break;
+        case 'friends':
+          filteredContacts.value = contacts.filter(contact => contact.category === 'friends');
+          break;
+        default:
+          filteredContacts.value = contacts;
+      }
+    }
+
+    return {
+      router,
+      filteredContacts,
+      filterContacts
+    }
   }
 });
+
 </script>
 
 <style scoped>
-#container {
-  text-align: center;
-  
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-  
-  color: #8c8c8c;
-  
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
 </style>
